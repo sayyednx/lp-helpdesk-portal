@@ -1,0 +1,54 @@
+# Starts 3 things:
+#   app     -> the help desk website       http://localhost:8080
+#   db      -> MySQL database (saves everything)
+#   mailpit -> a fake email inbox           http://localhost:8025
+#
+# Run:  docker compose up --build
+
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: helpdesk
+      MYSQL_USER: ${DB_USER:-helpdesk}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-helpdesk}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpass}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"   # inbox web page
+      - "1025:1025"   # SMTP
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:mysql://db:3306/helpdesk?serverTimezone=UTC
+      DB_USER: ${DB_USER:-helpdesk}
+      DB_PASSWORD: ${DB_PASSWORD:-helpdesk}
+      MAIL_ENABLED: "true"
+      MAIL_HOST: mailpit
+      MAIL_PORT: "1025"
+      BASE_URL: http://localhost:8080
+      COMPANY_NAME: ${COMPANY_NAME:-Logical Paradigm}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@logicalparadigm.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-ChangeMe123!}
+
+volumes:
+  db-data:

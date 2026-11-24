@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('New request')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('new')}"></header>
+
+<main class="container">
+    <div class="page-head">
+        <div>
+            <h1>New request</h1>
+            <p class="muted">Tell us what's going on. We'll send it to the right team.</p>
+        </div>
+        <a class="btn secondary" th:href="@{/dashboard}">Cancel</a>
+    </div>
+
+    <div class="grid-2">
+        <form class="card" th:action="@{/tickets}" th:object="${form}" method="post" novalidate>
+
+            <div class="field" th:classappend="${#fields.hasErrors('category')} ? 'has-error'">
+                <label for="category">1. Which team?</label>
+                <select id="category" th:field="*{category}">
+                    <option value="">Choose a team…</option>
+                    <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.displayName}">IT</option>
+                </select>
+                <div class="error" th:errors="*{category}"></div>
+            </div>
+
+            <div class="field" th:classappend="${#fields.hasErrors('requestType')} ? 'has-error'">
+                <label for="requestType">2. What kind of request?</label>
+                <select id="requestType" name="requestType">
+                    <option value="" data-cat="">Choose a team first…</option>
+                    <th:block th:each="c : ${categories}">
+                        <option th:each="rt : ${c.requestTypes}"
+                                th:value="${rt}" th:text="${rt}"
+                                th:attr="data-cat=${c.name()}"
+                                th:selected="${form.category == c and form.requestType == rt}">Type</option>
+                    </th:block>
+                </select>
+                <div class="error" th:errors="*{requestType}"></div>
+            </div>
+
+            <div class="field" th:classappend="${#fields.hasErrors('subject')} ? 'has-error'">
+                <label for="subject">3. Short title</label>
+                <input id="subject" type="text" th:field="*{subject}" maxlength="150"
+                       placeholder="e.g. My laptop won't turn on">
+                <div class="error" th:errors="*{subject}"></div>
+            </div>
+
+            <div class="field" th:classappend="${#fields.hasErrors('description')} ? 'has-error'">
+                <label for="description">4. Details</label>
+                <textarea id="description" th:field="*{description}" maxlength="5000"
+                          placeholder="What happened? When did it start? What have you tried?"></textarea>
+                <div class="hint">Please don't type passwords, bank numbers or SSNs here.</div>
+                <div class="error" th:errors="*{description}"></div>
+            </div>
+
+            <div class="field">
+                <label for="priority">5. How urgent is it?</label>
+                <select id="priority" th:field="*{priority}">
+                    <option th:each="p : ${priorities}" th:value="${p.name()}" th:text="${p.label}">Medium</option>
+                </select>
+            </div>
+
+            <button class="btn" type="submit">Send request</button>
+        </form>
+
+        <aside class="card">
+            <h3>Tips for a fast answer</h3>
+            <ul class="muted" style="padding-left:18px;margin:0">
+                <li>One problem per request.</li>
+                <li>Say what you were doing when it happened.</li>
+                <li>For paycheck questions, include the pay date.</li>
+                <li>Mark it <b>Urgent</b> only if you can't work at all.</li>
+            </ul>
+        </aside>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script>
+  // Show only the request types that belong to the chosen team.
+  (function () {
+    const cat = document.getElementById('category');
+    const type = document.getElementById('requestType');
+    const options = Array.from(type.options);
+
+    function refresh() {
+      const chosen = cat.value;
+      options.forEach(o => {
+        const show = o.dataset.cat === '' || o.dataset.cat === chosen;
+        o.hidden = !show;
+        o.disabled = !show;
+      });
+      options[0].textContent = chosen ? 'Choose a request type…' : 'Choose a team first…';
+      const sel = type.selectedOptions[0];
+      if (!sel || sel.disabled) type.value = '';
+    }
+    cat.addEventListener('change', refresh);
+    refresh();
+  })();
+</script>
+</body>
+</html>

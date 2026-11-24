@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Welcome')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('')}"></header>
+
+<main class="container">
+    <section class="landing-hero">
+        <img th:src="@{/img/logo.svg}" alt="">
+        <h1>Get help from <span th:text="${companyName}">Logical Paradigm</span> teams in one place</h1>
+        <p>Laptop broken? Paycheck looks wrong? Need a visa letter? Send a request and it goes straight to the right team.</p>
+        <div class="actions">
+            <a class="btn" th:href="@{/register}">Create an account</a>
+            <a class="btn secondary" th:href="@{/login}">Employee sign in</a>
+        </div>
+    </section>
+
+    <div class="tiles">
+        <div class="tile" th:each="c : ${categories}">
+            <div class="ic" th:classappend="${#strings.toLowerCase(c.name())}">
+                <th:block th:replace="~{fragments/layout :: icon(${c.icon})}"></th:block>
+            </div>
+            <h3 th:text="${c.displayName}">IT Support</h3>
+            <p th:text="${c.description}">Laptop and password problems</p>
+        </div>
+    </div>
+
+    <h2 style="text-align:center;margin:32px 0 16px">How it works</h2>
+    <div class="steps">
+        <div class="step"><div class="num">1</div><h3>Pick a topic</h3><p class="muted">Choose IT, HR, Payroll or Immigration.</p></div>
+        <div class="step"><div class="num">2</div><h3>Tell us what's wrong</h3><p class="muted">Fill out a short form. It takes about a minute.</p></div>
+        <div class="step"><div class="num">3</div><h3>Track it</h3><p class="muted">The right team gets an email. You can see updates any time.</p></div>
+    </div>
+
+    <p class="muted small" style="text-align:center;margin-top:40px">
+        Help desk staff? <a th:href="@{/admin/login}">Admin sign in</a>
+    </p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

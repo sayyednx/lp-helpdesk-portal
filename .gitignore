@@ -1,0 +1,14 @@
+# Build output
+target/
+
+# Local database files (dev profile)
+data/
+
+# Secrets - never commit these
+.env
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.DS_Store

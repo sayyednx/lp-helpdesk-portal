@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Users')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('users')}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div>
+            <h1>Users</h1>
+            <p class="muted">Everyone who has an account. Make someone an admin so they can answer tickets.</p>
+        </div>
+    </div>
+
+    <div class="card" style="padding:0">
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Joined</th><th>Role</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="u : ${users}">
+                    <td>
+                        <div style="display:flex;gap:10px;align-items:center">
+                            <div class="avatar" th:text="${u.initials}">AB</div>
+                            <span th:text="${u.fullName}">Name</span>
+                        </div>
+                    </td>
+                    <td class="small" th:text="${u.email}">email</td>
+                    <td class="small" th:text="${u.department ?: '-'}">Dept</td>
+                    <td class="muted small" th:text="${#temporals.format(u.createdAt, 'MMM d, yyyy')}">date</td>
+                    <td><span class="pill" th:classappend="${u.admin} ? 'urgent' : 'low'" th:text="${u.role}">EMPLOYEE</span></td>
+                    <td style="text-align:right">
+                        <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" th:unless="${u.id == currentUser.id}">
+                            <input type="hidden" name="role" th:value="${u.admin} ? 'EMPLOYEE' : 'ADMIN'">
+                            <button class="btn secondary small" type="submit"
+                                    th:text="${u.admin} ? 'Remove admin' : 'Make admin'">Make admin</button>
+                        </form>
+                        <span class="muted small" th:if="${u.id == currentUser.id}">You</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

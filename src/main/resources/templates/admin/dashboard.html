@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Admin dashboard')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('admin')}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="alert warn" th:unless="${liveEmail}">
+        Email is turned <b>off</b>, so emails are only written to the app log.
+        See "Turn on real email" in the README.
+    </div>
+
+    <div class="page-head">
+        <div>
+            <h1>Admin dashboard</h1>
+            <p class="muted">Everything happening at the help desk.</p>
+        </div>
+        <a class="btn" th:href="@{/admin/tickets(status='OPEN')}">See open tickets</a>
+    </div>
+
+    <div class="kpis">
+        <div class="kpi"><span>Open</span><b th:text="${counts['OPEN']}">0</b></div>
+        <div class="kpi"><span>In progress</span><b th:text="${counts['IN_PROGRESS']}">0</b></div>
+        <div class="kpi"><span>Waiting on employee</span><b th:text="${counts['WAITING_ON_EMPLOYEE']}">0</b></div>
+        <div class="kpi"><span>All time</span><b th:text="${counts['TOTAL']}">0</b></div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-head">
+                <h2>Newest tickets</h2>
+                <a th:href="@{/admin/tickets}">See all</a>
+            </div>
+            <div class="empty" th:if="${recentTickets.isEmpty()}">No tickets yet.</div>
+            <div class="table-wrap" th:unless="${recentTickets.isEmpty()}">
+                <table>
+                    <thead><tr><th>Ticket</th><th>Subject</th><th>From</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <tr th:each="t : ${recentTickets}">
+                        <td class="mono"><a th:href="@{/admin/tickets/{id}(id=${t.id})}" th:text="${t.number}">LP-1</a></td>
+                        <td>
+                            <a th:href="@{/admin/tickets/{id}(id=${t.id})}" th:text="${t.subject}">Subject</a>
+                            <div class="muted small" th:text="${t.category.displayName}">IT</div>
+                        </td>
+                        <td class="small" th:text="${t.requester.fullName}">Name</td>
+                        <td><span class="pill" th:classappend="${t.status.css}" th:text="${t.status.label}">Open</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <h2>Open by team</h2>
+                <ul class="route-list" style="margin-top:12px">
+                    <li th:each="c : ${categories}">
+                        <a th:href="@{/admin/tickets(category=${c.name()})}" th:text="${c.displayName}">IT</a>
+                        <b th:text="${openByCategory.get(c)}">0</b>
+                    </li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-head">
+                    <h2>Email routing</h2>
+                    <a th:href="@{/admin/routing}">Edit</a>
+                </div>
+                <ul class="route-list">
+                    <li th:each="r : ${rules}">
+                        <span th:text="${r.category.displayName}">IT</span>
+                        <span th:if="${r.hasEmails()}" class="mono" th:text="${r.emails}">it@x.com</span>
+                        <span th:unless="${r.hasEmails()}" class="notset">Not set</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

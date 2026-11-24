@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Admin sign in')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('')}"></header>
+
+<div class="auth">
+    <aside class="side admin">
+        <h1>Admin console</h1>
+        <p>For the people who answer the tickets.</p>
+        <ul>
+            <li>See every request from every employee</li>
+            <li>Update status and reply to employees</li>
+            <li>Choose which email gets IT, HR, Payroll and Immigration tickets</li>
+        </ul>
+    </aside>
+
+    <section class="form-side">
+        <div class="form-box">
+            <h2>Admin sign in</h2>
+            <p class="muted">Only admin accounts can sign in here.</p>
+
+            <div class="alert error" th:if="${param.error}">Wrong email or password. Please try again.</div>
+            <div class="alert warn" th:if="${param.notadmin}">That account isn't an admin. Use the employee sign in instead.</div>
+
+            <form th:action="@{/login}" method="post">
+                <input type="hidden" name="portal" value="admin">
+                <div class="field">
+                    <label for="email">Admin email</label>
+                    <input id="email" name="email" type="email" required autofocus autocomplete="username">
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" required autocomplete="current-password">
+                </div>
+                <button class="btn block" type="submit" style="background:#0f172a">Sign in to admin</button>
+            </form>
+
+            <hr class="divider">
+            <p class="switch" style="margin:0">Not staff? <a th:href="@{/login}">Employee sign in →</a></p>
+        </div>
+    </section>
+</div>
+</body>
+</html>

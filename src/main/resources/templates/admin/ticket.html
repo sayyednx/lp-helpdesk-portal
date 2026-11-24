@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head(${ticket.number})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('tickets')}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <p><a th:href="@{/admin/tickets}">← All tickets</a></p>
+    <div class="page-head">
+        <div>
+            <p class="mono muted" th:text="${ticket.number}">LP-00001</p>
+            <h1 th:text="${ticket.subject}">Subject</h1>
+            <p class="muted">
+                <span th:text="${ticket.category.displayName}">IT</span> ·
+                <span th:text="${ticket.requestType}">Type</span>
+            </p>
+        </div>
+        <span class="pill" style="font-size:14px;padding:6px 14px"
+              th:classappend="${ticket.status.css}" th:text="${ticket.status.label}">Open</span>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <div class="card">
+                <h3>Request</h3>
+                <div class="description" th:text="${ticket.description}">Details</div>
+            </div>
+
+            <div class="card">
+                <h3>Conversation</h3>
+                <p class="muted small" th:if="${ticket.comments.isEmpty()}">No messages yet.</p>
+                <div class="thread">
+                    <div class="msg" th:each="c : ${ticket.comments}" th:classappend="${c.author.admin} ? 'staff'">
+                        <div class="avatar" th:text="${c.author.initials}">AB</div>
+                        <div class="bubble">
+                            <span class="who" th:text="${c.author.fullName}">Name</span>
+                            <span class="when" th:text="${#temporals.format(c.createdAt, 'MMM d, h:mm a')}">time</span>
+                            <div class="text" th:text="${c.message}">Message</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form class="card" th:action="@{/admin/tickets/{id}(id=${ticket.id})}" method="post">
+                <h3>Update this ticket</h3>
+                <div class="row">
+                    <div class="field">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.label}"
+                                    th:selected="${ticket.status == s}">Open</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="priority">Priority</label>
+                        <select id="priority" name="priority">
+                            <option th:each="p : ${priorities}" th:value="${p.name()}" th:text="${p.label}"
+                                    th:selected="${ticket.priority == p}">Medium</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="reply">Reply to the employee <span class="muted small">(optional)</span></label>
+                    <textarea id="reply" name="reply" maxlength="5000" style="min-height:100px"
+                              placeholder="They'll see this on their ticket and get it by email."></textarea>
+                </div>
+                <button class="btn" type="submit">Save update</button>
+            </form>
+        </div>
+
+        <aside class="card">
+            <h3>Employee</h3>
+            <dl class="meta">
+                <dt>Name</dt><dd th:text="${ticket.requester.fullName}">Name</dd>
+                <dt>Email</dt><dd><a th:href="'mailto:' + ${ticket.requester.email}" th:text="${ticket.requester.email}">email</a></dd>
+                <dt>Department</dt><dd th:text="${ticket.requester.department ?: '-'}">Dept</dd>
+            </dl>
+            <hr class="divider">
+            <h3>Ticket</h3>
+            <dl class="meta">
+                <dt>Priority</dt><dd><span class="pill" th:classappend="${ticket.priority.css}" th:text="${ticket.priority.label}">Medium</span></dd>
+                <dt>Sent</dt><dd th:text="${#temporals.format(ticket.createdAt, 'MMM d, yyyy h:mm a')}">date</dd>
+                <dt>Updated</dt><dd th:text="${#temporals.format(ticket.updatedAt, 'MMM d, yyyy h:mm a')}">date</dd>
+                <dt>Routed to</dt><dd class="mono" th:text="${ticket.routedTo ?: 'No email was set'}">it@x.com</dd>
+                <dt>Email sent</dt><dd th:text="${ticket.emailSent} ? 'Yes' : 'No (logged only)'">Yes</dd>
+            </dl>
+        </aside>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

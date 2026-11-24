@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Something went wrong')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('')}"></header>
+
+<main class="container">
+    <div class="card empty" style="max-width:560px;margin:40px auto">
+        <h1 th:text="${status == 404} ? 'Page not found' : (${status == 403} ? 'Not allowed' : 'Something went wrong')">Oops</h1>
+        <p class="muted" th:if="${status == 404}">We couldn't find that page or ticket.</p>
+        <p class="muted" th:if="${status == 403}">Your account doesn't have access to this page.</p>
+        <p class="muted" th:unless="${status == 404 or status == 403}">Please try again in a minute.</p>
+        <a class="btn" th:href="@{/}">Go home</a>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('All tickets')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('tickets')}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div>
+            <h1>All tickets</h1>
+            <p class="muted"><span th:text="${tickets.size()}">0</span> found</p>
+        </div>
+    </div>
+
+    <form class="filters" th:action="@{/admin/tickets}" method="get">
+        <select name="category">
+            <option value="">All teams</option>
+            <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.displayName}"
+                    th:selected="${fCategory == c}">IT</option>
+        </select>
+        <select name="status">
+            <option value="">All statuses</option>
+            <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.label}"
+                    th:selected="${fStatus == s}">Open</option>
+        </select>
+        <input type="search" name="q" th:value="${q}" placeholder="Search subject, name or email">
+        <button class="btn" type="submit">Filter</button>
+        <a class="btn ghost" th:href="@{/admin/tickets}">Clear</a>
+    </form>
+
+    <div class="card" style="padding:0">
+        <div class="empty" th:if="${tickets.isEmpty()}">No tickets match these filters.</div>
+        <div class="table-wrap" th:unless="${tickets.isEmpty()}">
+            <table>
+                <thead><tr><th>Ticket</th><th>Subject</th><th>From</th><th>Team</th><th>Priority</th><th>Status</th><th>Sent</th></tr></thead>
+                <tbody>
+                <tr th:each="t : ${tickets}">
+                    <td class="mono"><a th:href="@{/admin/tickets/{id}(id=${t.id})}" th:text="${t.number}">LP-1</a></td>
+                    <td>
+                        <a th:href="@{/admin/tickets/{id}(id=${t.id})}" th:text="${t.subject}">Subject</a>
+                        <div class="muted small" th:text="${t.requestType}">Type</div>
+                    </td>
+                    <td class="small">
+                        <div th:text="${t.requester.fullName}">Name</div>
+                        <div class="muted" th:text="${t.requester.email}">email</div>
+                    </td>
+                    <td><span class="pill cat" th:text="${t.category.displayName}">IT</span></td>
+                    <td><span class="pill" th:classappend="${t.priority.css}" th:text="${t.priority.label}">Medium</span></td>
+                    <td><span class="pill" th:classappend="${t.status.css}" th:text="${t.status.label}">Open</span></td>
+                    <td class="muted small" th:text="${#temporals.format(t.createdAt, 'MMM d, h:mm a')}">date</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

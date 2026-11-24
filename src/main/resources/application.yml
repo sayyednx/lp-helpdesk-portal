@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------
+# LP Helpdesk Portal settings.
+# Anything written as ${NAME:default} can be changed with an
+# environment variable called NAME (see .env.example).
+# ---------------------------------------------------------------
+
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: lp-helpdesk-portal
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/helpdesk?createDatabaseIfNotExist=true&serverTimezone=UTC}
+    username: ${DB_USER:helpdesk}
+    password: ${DB_PASSWORD:helpdesk}
+
+  jpa:
+    hibernate:
+      ddl-auto: update        # creates/updates tables automatically
+    open-in-view: true
+    properties:
+      hibernate:
+        format_sql: false
+
+  thymeleaf:
+    cache: ${THYMELEAF_CACHE:true}
+
+  # Outgoing email. Docker Compose points this at Mailpit (a fake inbox at http://localhost:8025).
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${MAIL_SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${MAIL_STARTTLS:false}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+
+app:
+  company-name: ${COMPANY_NAME:Logical Paradigm}
+  base-url: ${BASE_URL:http://localhost:8080}
+
+  # First admin account. Created only if the database has no admins yet.
+  admin:
+    name: ${ADMIN_NAME:Portal Admin}
+    email: ${ADMIN_EMAIL:admin@logicalparadigm.local}
+    password: ${ADMIN_PASSWORD:ChangeMe123!}
+
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:helpdesk@logicalparadigm.local}
+
+  # Starting team emails. Admins can change these in Admin > Routing.
+  default-routing:
+    IT_SUPPORT: ${IT_EMAIL:it-support@logicalparadigm.local}
+    HR: ${HR_EMAIL:hr@logicalparadigm.local}
+    PAYROLL: ${PAYROLL_EMAIL:payroll@logicalparadigm.local}
+    IMMIGRATION: ${IMMIGRATION_EMAIL:immigration@logicalparadigm.local}
+
+---
+# "dev" profile: no MySQL needed. Uses a database file in ./data instead.
+# Run with:  mvn spring-boot:run -Dspring-boot.run.profiles=dev
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:file:./data/helpdesk;MODE=MySQL
+    username: sa
+    password:
+  thymeleaf:
+    cache: false

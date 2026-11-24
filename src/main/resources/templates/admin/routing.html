@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Email routing')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('routing')}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div>
+            <h1>Email routing</h1>
+            <p class="muted">Choose which inbox gets each kind of request. You can add more than one email, separated by commas.</p>
+        </div>
+    </div>
+
+    <div class="alert warn" th:unless="${liveEmail}">
+        Email is turned <b>off</b>. Tickets are still saved, but emails are only written to the app log.
+    </div>
+
+    <form class="card" th:action="@{/admin/routing}" method="post">
+        <div class="route" th:each="r : ${rules}">
+            <div class="who">
+                <div class="ic" th:classappend="${#strings.toLowerCase(r.category.name())}">
+                    <th:block th:replace="~{fragments/layout :: icon(${r.category.icon})}"></th:block>
+                </div>
+                <div>
+                    <b th:text="${r.category.displayName}">IT Support</b>
+                    <div class="muted small" th:text="${r.category.description}">desc</div>
+                </div>
+            </div>
+            <div>
+                <label th:for="'email_' + ${r.category.name()}">Send new tickets to</label>
+                <input type="text" th:id="'email_' + ${r.category.name()}" th:name="'email_' + ${r.category.name()}"
+                       th:value="${r.emails}" placeholder="team@logicalparadigm.com">
+                <label class="checkbox" style="margin-top:10px">
+                    <input type="checkbox" th:name="'notify_' + ${r.category.name()}" th:checked="${r.notifyEmployee}">
+                    Also email the employee a confirmation
+                </label>
+                <div class="muted small" th:if="${r.updatedBy}">
+                    Last changed by <span th:text="${r.updatedBy}">admin</span>
+                    on <span th:text="${#temporals.format(r.updatedAt, 'MMM d, yyyy')}">date</span>
+                </div>
+            </div>
+            <div>
+                <button class="btn secondary small" type="submit"
+                        th:formaction="@{/admin/routing/test/{c}(c=${r.category.name()})}">Send test email</button>
+            </div>
+        </div>
+        <div style="margin-top:20px">
+            <button class="btn" type="submit">Save routing</button>
+        </div>
+    </form>
+    <p class="muted small">"Send test email" uses the <b>saved</b> email, so press "Save routing" first if you changed it.</p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

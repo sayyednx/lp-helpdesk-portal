@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+  Shared pieces used by every page:
+  head(title), header(active), flash, footer, icon(name)
+-->
+
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | ' + ${companyName} + ' Help Center'">Help Center</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/logo.svg}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<header th:fragment="header(active)" class="topbar">
+    <div class="container">
+        <a class="brand" th:href="@{/}">
+            <img th:src="@{/img/logo.svg}" alt="">
+            <span><span th:text="${companyName}">Logical Paradigm</span><small>Help Center</small></span>
+        </a>
+
+        <nav class="nav" th:if="${currentUser != null and !currentUser.admin}">
+            <a th:href="@{/dashboard}" th:classappend="${active == 'home'} ? 'active'">Home</a>
+            <a th:href="@{/tickets/new}" th:classappend="${active == 'new'} ? 'active'">New request</a>
+            <a th:href="@{/tickets}" th:classappend="${active == 'mine'} ? 'active'">My tickets</a>
+        </nav>
+        <nav class="nav" th:if="${currentUser != null and currentUser.admin}">
+            <a th:href="@{/admin}" th:classappend="${active == 'admin'} ? 'active'">Dashboard</a>
+            <a th:href="@{/admin/tickets}" th:classappend="${active == 'tickets'} ? 'active'">All tickets</a>
+            <a th:href="@{/admin/routing}" th:classappend="${active == 'routing'} ? 'active'">Email routing</a>
+            <a th:href="@{/admin/users}" th:classappend="${active == 'users'} ? 'active'">Users</a>
+        </nav>
+        <nav class="nav" th:if="${currentUser == null}"></nav>
+
+        <div class="userbox" th:if="${currentUser != null}">
+            <span class="badge-admin" th:if="${currentUser.admin}">ADMIN</span>
+            <div class="avatar" th:text="${currentUser.initials}">NS</div>
+            <form th:action="@{/logout}" method="post" style="margin:0">
+                <button class="btn ghost small" type="submit">Sign out</button>
+            </form>
+        </div>
+        <div class="userbox" th:if="${currentUser == null}">
+            <a class="btn ghost small" th:href="@{/login}">Sign in</a>
+            <a class="btn small" th:href="@{/register}">Create account</a>
+        </div>
+    </div>
+</header>
+
+<div th:fragment="flash">
+    <div class="alert success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<footer th:fragment="footer" class="site">
+    <div class="container">
+        <span th:text="${companyName}">Logical Paradigm</span> Help Center ·
+        Need urgent help? Call the IT desk directly.
+    </div>
+</footer>
+
+<!-- Simple line icons (no external libraries needed). -->
+<th:block th:fragment="icon(name)" th:switch="${name}">
+    <svg th:case="'laptop'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/></svg>
+    <svg th:case="'people'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 5.5 4.8"/></svg>
+    <svg th:case="'money'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6 9v.01M18 15v.01"/></svg>
+    <svg th:case="'passport'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><circle cx="12" cy="10" r="3.2"/><path d="M8.8 10h6.4M12 6.8c1 1 1 5.4 0 6.4M12 6.8c-1 1-1 5.4 0 6.4M9 17h6"/></svg>
+    <svg th:case="*" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Employee sign in')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('')}"></header>
+
+<div class="auth">
+    <aside class="side">
+        <h1>Welcome back</h1>
+        <p>Sign in to send a request or check on one you already sent.</p>
+        <ul>
+            <li>IT, HR, Payroll and Immigration in one place</li>
+            <li>Your request goes to the right team automatically</li>
+            <li>See updates and reply any time</li>
+        </ul>
+    </aside>
+
+    <section class="form-side">
+        <div class="form-box">
+            <h2>Employee sign in</h2>
+            <p class="muted">Use your work email.</p>
+
+            <div class="alert success" th:if="${success}" th:text="${success}"></div>
+            <div class="alert error" th:if="${param.error}">Wrong email or password. Please try again.</div>
+            <div class="alert info" th:if="${param.logout}">You've been signed out.</div>
+
+            <form th:action="@{/login}" method="post">
+                <input type="hidden" name="portal" value="employee">
+                <div class="field">
+                    <label for="email">Work email</label>
+                    <input id="email" name="email" type="email" required autofocus autocomplete="username"
+                           th:value="${email}" placeholder="you@logicalparadigm.com">
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" required autocomplete="current-password">
+                </div>
+                <button class="btn block" type="submit">Sign in</button>
+            </form>
+
+            <p class="switch">New here? <a th:href="@{/register}">Create an account</a></p>
+            <hr class="divider">
+            <p class="switch" style="margin:0">Help desk staff? <a th:href="@{/admin/login}">Admin sign in →</a></p>
+        </div>
+    </section>
+</div>
+</body>
+</html>

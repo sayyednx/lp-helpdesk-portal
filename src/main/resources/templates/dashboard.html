@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('home')}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <section class="hero">
+        <h1>Hi, <span th:text="${#strings.arraySplit(currentUser.fullName, ' ')[0]}">Nabeel</span> 👋</h1>
+        <p>What do you need help with today? Pick a topic below and we'll send it to the right team.</p>
+        <div class="stats">
+            <div class="stat"><b th:text="${openCount}">0</b><span>Open requests</span></div>
+            <div class="stat"><b th:text="${doneCount}">0</b><span>Finished</span></div>
+        </div>
+    </section>
+
+    <div class="tiles">
+        <a class="tile" th:each="c : ${categories}" th:href="@{/tickets/new(category=${c.name()})}">
+            <div class="ic" th:classappend="${#strings.toLowerCase(c.name())}">
+                <th:block th:replace="~{fragments/layout :: icon(${c.icon})}"></th:block>
+            </div>
+            <h3 th:text="${c.displayName}">IT Support</h3>
+            <p th:text="${c.description}">Laptop and password problems</p>
+            <span class="go">Start a request →</span>
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <h2>Your recent requests</h2>
+            <a th:href="@{/tickets}" th:if="${!recentTickets.isEmpty()}">See all</a>
+        </div>
+        <div class="empty" th:if="${recentTickets.isEmpty()}">
+            <p>You haven't sent any requests yet.</p>
+            <a class="btn" th:href="@{/tickets/new}">Send your first request</a>
+        </div>
+        <div class="table-wrap" th:unless="${recentTickets.isEmpty()}">
+            <table>
+                <thead><tr><th>Ticket</th><th>Subject</th><th>Team</th><th>Status</th><th>Last update</th></tr></thead>
+                <tbody>
+                <tr th:each="t : ${recentTickets}">
+                    <td class="mono"><a th:href="@{/tickets/{id}(id=${t.id})}" th:text="${t.number}">LP-00001</a></td>
+                    <td><a th:href="@{/tickets/{id}(id=${t.id})}" th:text="${t.subject}">Laptop won't turn on</a></td>
+                    <td><span class="pill cat" th:text="${t.category.displayName}">IT</span></td>
+                    <td><span class="pill" th:classappend="${t.status.css}" th:text="${t.status.label}">Open</span></td>
+                    <td class="muted small" th:text="${#temporals.format(t.updatedAt, 'MMM d, h:mm a')}">Nov 1</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

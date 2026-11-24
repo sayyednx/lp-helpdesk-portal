@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Create account')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('')}"></header>
+
+<div class="auth">
+    <aside class="side">
+        <h1>Create your account</h1>
+        <p>It takes 30 seconds. Then you can send requests to any team.</p>
+        <ul>
+            <li>No more lost emails</li>
+            <li>One place for all your requests</li>
+            <li>Get an email when something changes</li>
+        </ul>
+    </aside>
+
+    <section class="form-side">
+        <div class="form-box">
+            <h2>Sign up</h2>
+            <p class="muted">Already have an account? <a th:href="@{/login}">Sign in</a></p>
+
+            <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+                <div class="field" th:classappend="${#fields.hasErrors('fullName')} ? 'has-error'">
+                    <label for="fullName">Full name</label>
+                    <input id="fullName" type="text" th:field="*{fullName}" autocomplete="name" placeholder="Jane Doe">
+                    <div class="error" th:errors="*{fullName}"></div>
+                </div>
+                <div class="field" th:classappend="${#fields.hasErrors('email')} ? 'has-error'">
+                    <label for="email">Work email</label>
+                    <input id="email" type="email" th:field="*{email}" autocomplete="email" placeholder="you@logicalparadigm.com">
+                    <div class="error" th:errors="*{email}"></div>
+                </div>
+                <div class="field">
+                    <label for="department">Department <span class="muted small">(optional)</span></label>
+                    <input id="department" type="text" th:field="*{department}" placeholder="e.g. Engineering">
+                </div>
+                <div class="row">
+                    <div class="field" th:classappend="${#fields.hasErrors('password')} ? 'has-error'">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" name="password" autocomplete="new-password">
+                        <div class="error" th:errors="*{password}"></div>
+                    </div>
+                    <div class="field" th:classappend="${#fields.hasErrors('confirmPassword')} ? 'has-error'">
+                        <label for="confirmPassword">Type it again</label>
+                        <input id="confirmPassword" type="password" name="confirmPassword" autocomplete="new-password">
+                        <div class="error" th:errors="*{confirmPassword}"></div>
+                    </div>
+                </div>
+                <p class="hint muted small" style="margin-top:-8px">At least 8 characters.</p>
+                <button class="btn block" type="submit">Create account</button>
+            </form>
+        </div>
+    </section>
+</div>
+</body>
+</html>

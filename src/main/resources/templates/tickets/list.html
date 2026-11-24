@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('My tickets')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('mine')}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div>
+            <h1>My tickets</h1>
+            <p class="muted">Everything you've sent to the help desk.</p>
+        </div>
+        <a class="btn" th:href="@{/tickets/new}">+ New request</a>
+    </div>
+
+    <div class="card">
+        <div class="empty" th:if="${tickets.isEmpty()}">
+            <p>No tickets yet.</p>
+            <a class="btn" th:href="@{/tickets/new}">Send a request</a>
+        </div>
+        <div class="table-wrap" th:unless="${tickets.isEmpty()}">
+            <table>
+                <thead><tr><th>Ticket</th><th>Subject</th><th>Team</th><th>Priority</th><th>Status</th><th>Sent</th></tr></thead>
+                <tbody>
+                <tr th:each="t : ${tickets}">
+                    <td class="mono"><a th:href="@{/tickets/{id}(id=${t.id})}" th:text="${t.number}">LP-00001</a></td>
+                    <td>
+                        <a th:href="@{/tickets/{id}(id=${t.id})}" th:text="${t.subject}">Subject</a>
+                        <div class="muted small" th:text="${t.requestType}">Type</div>
+                    </td>
+                    <td><span class="pill cat" th:text="${t.category.displayName}">IT</span></td>
+                    <td><span class="pill" th:classappend="${t.priority.css}" th:text="${t.priority.label}">Medium</span></td>
+                    <td><span class="pill" th:classappend="${t.status.css}" th:text="${t.status.label}">Open</span></td>
+                    <td class="muted small" th:text="${#temporals.format(t.createdAt, 'MMM d, yyyy')}">Nov 1</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
